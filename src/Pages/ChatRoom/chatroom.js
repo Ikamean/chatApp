@@ -24,6 +24,7 @@ const Chatroom = () => {
     const messagesRef = firestore.collection('messages');
     const [ formValue, setFormValue ] = useState('');
 
+
     const [ showEmoji, setShowEmoji ] = useState(false);
     
 
@@ -36,7 +37,7 @@ const Chatroom = () => {
 
         const { uid, photoURL, displayName } = auth.currentUser;
 
-        await messagesRef.add({
+        messages &&  await messagesRef.add({
             text: formValue,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             uid,
