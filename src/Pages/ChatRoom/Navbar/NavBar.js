@@ -17,8 +17,9 @@ const NavBar = () => {
         <Navbar>
             
                 <Header>
-                    Bitcamp Chat
+                    Bitcamp Chat Beta 
                 </Header>
+                
             
             <UserPhotoContainer>
                 { 
@@ -63,7 +64,7 @@ const UserPhotoContainer = styled.div`
     min-width: 128px;
 `
 
-const UserPhotoBtn = styled.button`
+const UserPhotoBtn = styled.div`
     background-color: transparent;
     border: none;
     outline: none;

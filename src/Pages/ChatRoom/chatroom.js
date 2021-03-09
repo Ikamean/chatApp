@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import 'emoji-mart/css/emoji-mart.css';
@@ -24,12 +24,29 @@ const Chatroom = () => {
     const messagesRef = firestore.collection('messages');
     const [ formValue, setFormValue ] = useState('');
 
-
-    const [ showEmoji, setShowEmoji ] = useState(false);
-    
-
     const query = messagesRef.orderBy('createdAt').limit(100);
     const [messages] = useCollectionData(query, { idField: 'id' });
+
+
+    useEffect(() => {
+        let timeNow = (new Date()).getTime();
+        
+        let allreadySet = localStorage.getItem('timeSet') !== null;
+
+        if(!allreadySet){
+            localStorage.setItem('timeSet', timeNow);
+        }
+        let timeSet = localStorage.getItem('timeSet');
+        
+        if( (timeNow - timeSet) > 1000 * 60 * 60 * 24  ){
+            console.log('24 hours is passed since last TimeSet');
+            localStorage.setItem('timeSet',null)
+        }
+        dummy.current.scrollIntoView({ behavior: 'smooth' });
+    }, [messages])
+
+
+    const [ showEmoji, setShowEmoji ] = useState(false);
 
 
     const sendMessage = async (e) => {
@@ -37,28 +54,45 @@ const Chatroom = () => {
 
         const { uid, photoURL, displayName } = auth.currentUser;
 
+        let timeSet = localStorage.getItem('timeSet');
+        let timeNow = (new Date()).getTime();
+        let dayPassed = false;
+
+        if( (timeNow - timeSet) > 1000 * 60 * 60 * 24  ){
+            console.log('24 hours is passed since last TimeSet');
+            localStorage.clear();
+            dayPassed = true;
+        }
+        
+
         messages &&  await messagesRef.add({
             text: formValue,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             uid,
             photoURL,
             displayName,
-            msgId: Math.floor(Math.floor(Math.random() * messages.length + 1000) * Math.random() * 555 )
+            msgId: Math.floor(Math.floor(Math.random() * messages.length + 1000) * Math.random() * 555 ),
+            dayPassed
         });
 
         setFormValue('');
-        dummy.current.scrollIntoView({ behavior: 'smooth' });
     }
 
+    const handleEnter = (e) =>{
+        e.key === 'Enter' && sendMessage(e)
+    } 
     return (
         <ChatRoomContainer>
             <NavBar />
-            {
-                messages &&
-                messages.map( msg => <ChatMessage key={Number(msg.msgId)} message={msg} user messagesRef={messagesRef} /> )
-            }
+            <MessagesContainer>
+                {
+                    messages &&
+                    messages.map( msg => <ChatMessage key={Number(msg.msgId)} message={msg} user messagesRef={messagesRef} /> )
+                }
+                <span ref={dummy}></span>
+            </MessagesContainer>
 
-            <span ref={dummy}></span>
+            
             
             <FormContainer>
                 <EmojiIcon onClick={()=>setShowEmoji(!showEmoji)}>
@@ -76,8 +110,8 @@ const Chatroom = () => {
 
                 <Form onSubmit={sendMessage}>
                     
-                        <Input placeholder='Message Bitcamp' value={formValue} onChange={(e)=>setFormValue(e.target.value)} />
-                        <SendMessageBtn type='submit' disabled={!formValue}> <AiOutlineSend /></SendMessageBtn>
+                        <Input onKeyDown={(e)=>handleEnter(e)} placeholder='Message Bitcamp' value={formValue} onChange={(e)=>setFormValue(e.target.value)} />
+                        <SendMessageBtn type='submit'  disabled={!formValue}> <AiOutlineSend /></SendMessageBtn>
                     
                 </Form>
             </FormContainer>
@@ -92,7 +126,7 @@ const EmojiIcon = styled.span`
     position: absolute;
     color: ${ props => props.theme.colors.navBar.purple };
     left: 30px;
-    top: 15px;
+    top: 60px;
     font-size: 1rem;
     cursor: pointer;
     &:hover{
@@ -108,8 +142,9 @@ const Emoji = styled.span`
     display: ${ props=> props.show? 'block' : 'none' };
     position: absolute;
     top: -425px;
-    right: 20px;
+    left: 20px;
     cursor: pointer;
+    
 `
 
 
@@ -124,7 +159,16 @@ const ChatRoomContainer = styled.div`
     flex-direction: column;
     justify-content: space-between;
 `
-
+const MessagesContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 30px;
+    bottom: 110px;
+    left: 2px;
+    right: 2px;
+    overflow-y: auto;
+`
 const FormContainer = styled.div`
     display: flex;
     position: relative;

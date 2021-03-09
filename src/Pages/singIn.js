@@ -11,7 +11,7 @@ const SingIn = () => {
 
     const provider = new firebase.auth.GoogleAuthProvider();
 
-    auth.signInWithPopup(provider);
+    auth.signInWithRedirect(provider);
 
     }
     
@@ -26,7 +26,7 @@ const SingIn = () => {
 
             </LogoContainer>
             <BitcampH1>
-                Sing in to Bitcamp Chat
+                Sign in to Bitcamp Chat
             </BitcampH1>
 
             <SingInDetails>

@@ -9,7 +9,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 const Logout = ( { open }) => {
 
     const [user] = useAuthState(auth);
-    const { photoURL, displayName } = user;
+    const { photoURL, displayName } = user && user;
 
     return (
             user &&
@@ -88,6 +88,7 @@ const ActiveDisplayName = styled.span`
     font-weight: 900;
     font-size: 1rem;
     opacity: 0.8;
+    color: ${ props => props.theme.colors.black};
 `
 const GreenCircleContainer = styled.div`
     display: flex;
@@ -98,6 +99,7 @@ const GreenCircleContainer = styled.div`
 const ActiveText = styled.p`
     font-weight: 500;
     opacity: 0.6;
+    color: ${ props => props.theme.colors.black};
 `
 const GreenCircle = styled.span`
     color: ${ props => props.theme.colors.logout.activeCircle };

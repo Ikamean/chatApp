@@ -28,8 +28,8 @@ export default AvatarComponent
 
 const HoverName = styled.div`
     position: absolute;
-    left: -100px;
-    top: 40px;
+    left: -80px;
+    top: 44px;
     width: auto;
     padding: 8px;
     text-align: center;

@@ -1,13 +1,11 @@
 import React from 'react'
-import { auth } from '../../Server/firebase';
 import styled from 'styled-components';
 
 
 const ChatMessage = ({ message , messagesRef }) => {
-    const { text, uid, photoURL, displayName,  createdAt } = message;
-    let current = uid === auth.currentUser.uid
+    const { text, photoURL, displayName,  createdAt, dayPassed } = message;
+    
 
-    ;
     
     let date = new Date();
     createdAt && date.setTime(createdAt.seconds * 1000);
@@ -29,7 +27,7 @@ const ChatMessage = ({ message , messagesRef }) => {
     return (
         <>  
         <Fieldset>
-            <Legend>{ `${fullDate[0]}, ${fullDate[1]} ${fullDate[2]} `}</Legend>
+            { dayPassed && <Legend>{ `${fullDate[0]}, ${fullDate[1]} ${fullDate[2]} `}</Legend> } 
         </Fieldset>
         <SentMessagesContainer>
             <AvatarContainer>
